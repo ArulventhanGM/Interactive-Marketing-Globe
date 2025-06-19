@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Three.js Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        #container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h3>Basic Three.js Test</h3>
+        <div id="status">Loading...</div>
+    </div>
+    <div id="container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.157.0/three.min.js"></script>
+    <script>
+        const status = document.getElementById('status');
+        const container = document.getElementById('container');
+
+        function updateStatus(message) {
+            status.innerHTML = message;
+            console.log(message);
+        }
+
+        // Check Three.js
+        if (typeof THREE === 'undefined') {
+            updateStatus('❌ Three.js not loaded');
+            return;
+        }
+        updateStatus('✅ Three.js loaded (v' + THREE.REVISION + ')');
+
+        // Check WebGL
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) {
+                throw new Error('WebGL not supported');
+            }
+            updateStatus('✅ Three.js loaded, WebGL supported');
+        } catch (error) {
+            updateStatus('❌ WebGL not supported: ' + error.message);
+            return;
+        }
+
+        // Create basic scene
+        try {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000011);
+            container.appendChild(renderer.domElement);
+
+            // Create a simple blue sphere
+            const geometry = new THREE.SphereGeometry(2, 32, 32);
+            const material = new THREE.MeshBasicMaterial({ color: 0x0077ff });
+            const sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+
+            camera.position.z = 5;
+
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                sphere.rotation.x += 0.01;
+                sphere.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+
+            animate();
+            updateStatus('✅ Basic Three.js scene working!');
+
+        } catch (error) {
+            updateStatus('❌ Error creating scene: ' + error.message);
+            console.error(error);
+        }
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

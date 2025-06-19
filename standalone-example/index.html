@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlobalTech Solutions</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.157.0/three.min.js" onerror="console.error('Failed to load Three.js from CDN')"></script>
+  <script>
+    // Fallback Three.js loading
+    if (typeof THREE === 'undefined') {
+      console.log('Loading Three.js fallback...');
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/three@0.157.0/build/three.min.js';
+      script.onerror = () => console.error('Failed to load Three.js fallback');
+      document.head.appendChild(script);
+    }
+  </script>
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <div class="logo">GlobalTech Solutions</div>
+      <div class="menu-container">
+        <div class="hamburger">☰</div>
+        <div class="menu" style="display: none;">
+          <ul>
+            <li>About Us</li>
+            <li>Achievements</li>
+            <li>Locations</li>
+            <li>Contact</li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Achievement Filters -->
+    <div class="filters-container">
+      <div class="filter-group">
+        <label>Filter by Category:</label>
+        <select id="category-filter">
+          <option value="all">All Categories</option>
+          <option value="award">Awards</option>
+          <option value="innovation">Innovation</option>
+          <option value="sustainability">Sustainability</option>
+          <option value="operational">Operational</option>
+          <option value="partnership">Partnership</option>
+          <option value="social">Social Impact</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Filter by Year:</label>
+        <select id="year-filter">
+          <option value="all">All Years</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+        </select>
+      </div>
+      <div class="stats-summary">
+        <span id="total-achievements">Total Achievements: 18</span>
+        <span id="total-locations">Locations: 6</span>
+      </div>
+    </div>
+
+    <main class="main-content">
+      <div class="globe-wrapper">
+        <div id="globe-container" class="globe-container">
+          <!-- Loading indicator -->
+          <div id="loading-indicator" style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+          ">
+            <div style="
+              width: 50px;
+              height: 50px;
+              border: 3px solid rgba(255, 255, 255, 0.3);
+              border-top: 3px solid #00BFFF;
+              border-radius: 50%;
+              animation: spin 1s linear infinite;
+              margin: 0 auto 20px auto;
+            "></div>
+            <div style="font-size: 18px; margin-bottom: 10px; color: #00BFFF;">Loading 3D Globe...</div>
+            <div id="loading-status" style="font-size: 14px; color: #aaa;">Initializing components...</div>
+          </div>
+        </div>
+
+        <!-- Enhanced Location Tooltip -->
+        <div id="location-tooltip" class="location-tooltip" style="display: none;">
+          <button id="close-tooltip" class="close-btn">×</button>
+          <div class="tooltip-header">
+            <h3 id="location-name"></h3>
+            <div class="location-stats">
+              <span id="location-established"></span>
+              <span id="location-employees"></span>
+            </div>
+          </div>
+          <div class="tooltip-content">
+            <p id="location-description"></p>
+            <div class="revenue-info">
+              <div class="revenue-item">
+                <label>Revenue:</label>
+                <span id="location-revenue"></span>
+              </div>
+              <div class="revenue-item">
+                <label>Market Share:</label>
+                <span id="location-market-share"></span>
+              </div>
+            </div>
+            <div class="achievements-section">
+              <h4>Key Achievements</h4>
+              <div id="achievements-list"></div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Zoom Hint -->
+        <div class="zoom-hint">
+          Scroll to zoom • Drag to rotate • Click markers for details
+        </div>
+
+        <!-- Controls Status -->
+        <div id="controls-status" class="controls-status loading">
+          <div class="status-line">🎮 Controls: Loading...</div>
+          <div class="status-line">📡 CDN: Checking...</div>
+          <div class="status-line">🖱️ Interaction: Ready</div>
+        </div>
+
+        <!-- Achievement Modal Dialog -->
+        <div id="achievement-modal" class="achievement-modal" style="display: none;">
+          <div class="modal-overlay"></div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 id="modal-location-name">Location Achievements</h2>
+              <button id="close-modal" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+              <div class="location-info">
+                <div class="location-details">
+                  <div class="detail-item">
+                    <span class="detail-label">Established:</span>
+                    <span id="modal-established" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Employees:</span>
+                    <span id="modal-employees" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Role:</span>
+                    <span id="modal-role" class="detail-value">-</span>
+                  </div>
+                </div>
+                <div class="location-description">
+                  <p id="modal-description">-</p>
+                </div>
+              </div>
+
+              <div class="achievements-container">
+                <div class="achievements-header">
+                  <h3>Company Achievements</h3>
+                  <div class="achievement-filters">
+                    <select id="modal-category-filter">
+                      <option value="all">All Categories</option>
+                      <option value="award">Awards</option>
+                      <option value="innovation">Innovation</option>
+                      <option value="sustainability">Sustainability</option>
+                      <option value="social">Social Impact</option>
+                    </select>
+                    <select id="modal-year-filter">
+                      <option value="all">All Years</option>
+                      <option value="2024">2024</option>
+                      <option value="2023">2023</option>
+                      <option value="2022">2022</option>
+                    </select>
+                  </div>
+                </div>
+                <div id="modal-achievements-list" class="modal-achievements-list">
+                  <!-- Achievements will be populated here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Status Panel -->
+        <div class="bottom-status-panel">
+          <!-- Day/Night Indicator -->
+          <div id="day-night-indicator" class="day-night-indicator">
+            <div class="indicator-icon">🌅</div>
+            <div class="indicator-text">
+              <div class="indicator-label">Real-Time GMT Lighting</div>
+              <div id="lighting-status" class="indicator-status">Initializing...</div>
+            </div>
+          </div>
+
+          <!-- GMT Clock Display -->
+          <div id="gmt-clock" class="gmt-clock">
+            <div class="clock-label">Greenwich Mean Time</div>
+            <div id="gmt-time" class="clock-time">--:--:-- GMT</div>
+            <div id="gmt-date" class="clock-date">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="social-links">
+        <a href="#">Twitter</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">Facebook</a>
+        <a href="#">Instagram</a>
+      </div>
+      <div class="company-info">
+        © 2025 GlobalTech Solutions. Transforming the world through innovation.
+      </div>
+    </footer>
+  </div>
+
+  <script src="globe-simple.js"></script>
+  <script>
+    // Show/hide menu
+    document.querySelector('.hamburger').addEventListener('click', function() {
+      const menu = document.querySelector('.menu');
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Controls status monitoring
+    function updateControlsStatus(controlsType, cdnStatus, interactionStatus) {
+      const statusElement = document.getElementById('controls-status');
+      if (!statusElement) return;
+
+      const lines = statusElement.querySelectorAll('.status-line');
+      if (lines.length >= 3) {
+        lines[0].textContent = `🎮 Controls: ${controlsType}`;
+        lines[1].textContent = `📡 CDN: ${cdnStatus}`;
+        lines[2].textContent = `🖱️ Interaction: ${interactionStatus}`;
+      }
+
+      // Update status class
+      statusElement.className = 'controls-status';
+      if (controlsType === 'Loading...' || cdnStatus === 'Checking...') {
+        statusElement.classList.add('loading');
+      } else if (controlsType === 'Failed' || cdnStatus === 'Failed') {
+        statusElement.classList.add('error');
+      }
+    }
+
+    // Monitor console for status updates
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const message = args.join(' ');
+
+      if (message.includes('MapControls loaded successfully')) {
+        updateControlsStatus('MapControls', 'Success', 'Active');
+      } else if (message.includes('OrbitControls loaded successfully')) {
+        updateControlsStatus('OrbitControls', 'Success', 'Active');
+      } else if (message.includes('Manual controls implemented')) {
+        updateControlsStatus('Manual', 'Fallback', 'Active');
+      } else if (message.includes('User interaction started')) {
+        const statusElement = document.getElementById('controls-status');
+        if (statusElement) {
+          const lines = statusElement.querySelectorAll('.status-line');
+          if (lines.length >= 3) {
+            lines[2].textContent = '🖱️ Interaction: Active';
+          }
+        }
+      }
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      const message = args.join(' ');
+
+      if (message.includes('Failed to load') && message.includes('Controls')) {
+        updateControlsStatus('Failed', 'Error', 'Disabled');
+      }
+    };
+
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      const message = args.join(' ');
+
+      if (message.includes('All CDN attempts failed')) {
+        updateControlsStatus('Manual', 'Failed', 'Fallback');
+      }
+    };
+
+    // Hide status after successful initialization
+    setTimeout(() => {
+      const statusElement = document.getElementById('controls-status');
+      if (statusElement && !statusElement.classList.contains('error')) {
+        statusElement.style.opacity = '0.7';
+        setTimeout(() => {
+          statusElement.style.display = 'none';
+        }, 10000); // Hide after 10 seconds if successful
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

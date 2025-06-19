@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Globe Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    #globe-container {
+      width: 100vw;
+      height: 100vh;
+    }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 1000;
+      max-width: 300px;
+    }
+    .status {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 3px;
+    }
+    .success { background: rgba(0,255,0,0.2); }
+    .error { background: rgba(255,0,0,0.2); }
+    .warning { background: rgba(255,255,0,0.2); }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <h3>🌍 Simple Globe Test</h3>
+    <div id="status-container">
+      <div class="status">Initializing...</div>
+    </div>
+    <div style="margin-top: 10px; font-size: 0.9em;">
+      <strong>Instructions:</strong><br>
+      • Scroll to zoom<br>
+      • Drag to rotate<br>
+      • Click markers for info
+    </div>
+  </div>
+  
+  <div id="globe-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.157.0/three.min.js"></script>
+  <script src="globe-simple.js"></script>
+  
+  <script>
+    // Monitor console messages and display them
+    const statusContainer = document.getElementById('status-container');
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    function addStatus(message, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `status ${type}`;
+      div.textContent = message;
+      statusContainer.appendChild(div);
+      
+      // Keep only last 10 messages
+      while (statusContainer.children.length > 10) {
+        statusContainer.removeChild(statusContainer.firstChild);
+      }
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const message = args.join(' ');
+      if (message.includes('✅')) {
+        addStatus(message, 'success');
+      } else {
+        addStatus(message, 'info');
+      }
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      addStatus(args.join(' '), 'error');
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      addStatus(args.join(' '), 'warning');
+    };
+  </script>
+</body>
+</html>

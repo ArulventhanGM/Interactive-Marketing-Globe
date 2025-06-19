@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotation Direction Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    #globe-container {
+      width: 100vw;
+      height: 100vh;
+    }
+    #test-info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.9);
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1000;
+      max-width: 400px;
+      border: 2px solid #0a5;
+    }
+    .test-instruction {
+      background: rgba(0,100,200,0.3);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      border-left: 4px solid #06c;
+    }
+    .expected-behavior {
+      background: rgba(0,150,0,0.3);
+      padding: 10px;
+      border-radius: 5px;
+      margin: 5px 0;
+      border-left: 3px solid #0a5;
+      font-size: 0.9em;
+    }
+    .direction-test {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      padding: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+    }
+    .test-result {
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+    .correct { background: #0a5; color: white; }
+    .incorrect { background: #a05; color: white; }
+    .pending { background: #555; color: white; }
+  </style>
+</head>
+<body>
+  <div id="test-info">
+    <h3>🧭 Rotation Direction Test</h3>
+    
+    <div class="test-instruction">
+      <strong>Test Instructions:</strong><br>
+      Please test each direction and verify if the rotation feels natural:
+    </div>
+    
+    <div class="expected-behavior">
+      <strong>Expected Google Earth-style behavior:</strong><br>
+      • Drag LEFT → Globe rotates LEFT (shows more of right side)<br>
+      • Drag RIGHT → Globe rotates RIGHT (shows more of left side)<br>
+      • Drag UP → Globe tilts UP (shows more of south/bottom)<br>
+      • Drag DOWN → Globe tilts DOWN (shows more of north/top)
+    </div>
+    
+    <div style="margin: 15px 0;">
+      <h4>🎯 Direction Tests:</h4>
+      
+      <div class="direction-test">
+        <span>Drag LEFT (should rotate globe left)</span>
+        <span id="left-result" class="test-result pending">TEST IT</span>
+      </div>
+      
+      <div class="direction-test">
+        <span>Drag RIGHT (should rotate globe right)</span>
+        <span id="right-result" class="test-result pending">TEST IT</span>
+      </div>
+      
+      <div class="direction-test">
+        <span>Drag UP (should tilt up/show south)</span>
+        <span id="up-result" class="test-result pending">TEST IT</span>
+      </div>
+      
+      <div class="direction-test">
+        <span>Drag DOWN (should tilt down/show north)</span>
+        <span id="down-result" class="test-result pending">TEST IT</span>
+      </div>
+    </div>
+    
+    <div style="margin-top: 15px; padding: 10px; background: rgba(255,200,0,0.2); border-radius: 5px; border-left: 3px solid #fc0;">
+      <strong>Manual Testing:</strong><br>
+      Click the buttons below to mark if each direction feels correct or inverted:
+    </div>
+    
+    <div style="margin: 10px 0;">
+      <button onclick="markResult('left', true)" style="background: #0a5; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 3px; cursor: pointer;">LEFT ✓</button>
+      <button onclick="markResult('left', false)" style="background: #a05; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 3px; cursor: pointer;">LEFT ✗</button>
+      
+      <button onclick="markResult('right', true)" style="background: #0a5; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 3px; cursor: pointer;">RIGHT ✓</button>
+      <button onclick="markResult('right', false)" style="background: #a05; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 3px; cursor: pointer;">RIGHT ✗</button>
+    </div>
+    
+    <div style="margin: 10px 0;">
+      <button onclick="markResult('up', true)" style="background: #0a5; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 3px; cursor: pointer;">UP ✓</button>
+      <button onclick="markResult('up', false)" style="background: #a05; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 3px; cursor: pointer;">UP ✗</button>
+      
+      <button onclick="markResult('down', true)" style="background: #0a5; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 3px; cursor: pointer;">DOWN ✓</button>
+      <button onclick="markResult('down', false)" style="background: #a05; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 3px; cursor: pointer;">DOWN ✗</button>
+    </div>
+    
+    <div id="test-summary" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 5px; display: none;">
+      <strong>Test Results Summary:</strong><br>
+      <span id="summary-text"></span>
+    </div>
+  </div>
+  
+  <div id="globe-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.157.0/three.min.js"></script>
+  <script src="globe-simple.js"></script>
+  
+  <script>
+    const testResults = {
+      left: null,
+      right: null,
+      up: null,
+      down: null
+    };
+    
+    function markResult(direction, isCorrect) {
+      testResults[direction] = isCorrect;
+      
+      const resultElement = document.getElementById(direction + '-result');
+      if (resultElement) {
+        resultElement.textContent = isCorrect ? 'CORRECT' : 'INVERTED';
+        resultElement.className = `test-result ${isCorrect ? 'correct' : 'incorrect'}`;
+      }
+      
+      updateSummary();
+    }
+    
+    function updateSummary() {
+      const completed = Object.values(testResults).filter(r => r !== null).length;
+      const correct = Object.values(testResults).filter(r => r === true).length;
+      const incorrect = Object.values(testResults).filter(r => r === false).length;
+      
+      if (completed > 0) {
+        const summaryElement = document.getElementById('test-summary');
+        const summaryText = document.getElementById('summary-text');
+        
+        summaryElement.style.display = 'block';
+        summaryText.innerHTML = `
+          Tested: ${completed}/4 directions<br>
+          Correct: ${correct} | Inverted: ${incorrect}<br>
+          ${incorrect > 0 ? '<span style="color: #f84;">⚠️ Rotation direction needs fixing!</span>' : '<span style="color: #4f8;">✅ All directions feel natural!</span>'}
+        `;
+        
+        if (completed === 4) {
+          if (incorrect > 0) {
+            summaryText.innerHTML += '<br><br><strong>🔧 Fix needed:</strong> The rotation direction calculations need to be inverted.';
+          } else {
+            summaryText.innerHTML += '<br><br><strong>🎉 Perfect:</strong> All rotation directions feel natural!';
+          }
+        }
+      }
+    }
+    
+    // Auto-detect some obvious issues
+    let lastMouseX = 0, lastMouseY = 0;
+    let dragDirection = null;
+    
+    document.addEventListener('mousedown', (e) => {
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+      if (e.buttons === 1) { // Left mouse button down
+        const deltaX = e.clientX - lastMouseX;
+        const deltaY = e.clientY - lastMouseY;
+        
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+          // Horizontal drag
+          if (deltaX > 0 && !dragDirection) {
+            dragDirection = 'right';
+            console.log('🎯 Detected RIGHT drag - observe globe rotation');
+          } else if (deltaX < 0 && !dragDirection) {
+            dragDirection = 'left';
+            console.log('🎯 Detected LEFT drag - observe globe rotation');
+          }
+        } else if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+          // Vertical drag
+          if (deltaY > 0 && !dragDirection) {
+            dragDirection = 'down';
+            console.log('🎯 Detected DOWN drag - observe globe tilt');
+          } else if (deltaY < 0 && !dragDirection) {
+            dragDirection = 'up';
+            console.log('🎯 Detected UP drag - observe globe tilt');
+          }
+        }
+      }
+    });
+    
+    document.addEventListener('mouseup', () => {
+      dragDirection = null;
+    });
+  </script>
+</body>
+</html>

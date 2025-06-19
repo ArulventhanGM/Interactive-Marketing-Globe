@@ -1,0 +1,290 @@
+[
+  {
+    "id": 1,
+    "title": "Fortune 500 Recognition",
+    "category": "award",
+    "location": "New York HQ",
+    "lat": 40.7128,
+    "lng": -74.0060,
+    "year": 2023,
+    "description": "Ranked #127 in Fortune 500 companies for outstanding business performance and innovation leadership.",
+    "impact": "Global recognition for excellence in technology and sustainable business practices.",
+    "metrics": {
+      "revenue": "$2.8B",
+      "growth": "15%",
+      "employees": "2500"
+    }
+  },
+  {
+    "id": 2,
+    "title": "Green Building Certification",
+    "category": "sustainability",
+    "location": "New York HQ",
+    "lat": 40.7128,
+    "lng": -74.0060,
+    "year": 2022,
+    "description": "LEED Platinum certification for headquarters building with innovative energy systems.",
+    "impact": "40% reduction in energy consumption and carbon footprint.",
+    "metrics": {
+      "savings": "$1.2M",
+      "co2Reduction": "500 tons",
+      "efficiency": "40%"
+    }
+  },
+  {
+    "id": 3,
+    "title": "AI Innovation Center Launch",
+    "category": "innovation",
+    "location": "New York HQ",
+    "lat": 40.7128,
+    "lng": -74.0060,
+    "year": 2024,
+    "description": "Opened state-of-the-art AI research facility focusing on machine learning breakthroughs.",
+    "impact": "Leading breakthrough in natural language processing and computer vision.",
+    "metrics": {
+      "patents": "25",
+      "researchers": "150",
+      "funding": "$50M"
+    }
+  },
+  {
+    "id": 4,
+    "title": "Brexit Resilience Award",
+    "category": "award",
+    "location": "London Office",
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "year": 2023,
+    "description": "Recognized for maintaining growth and market leadership post-Brexit transition.",
+    "impact": "Sustained European market leadership despite economic challenges.",
+    "metrics": {
+      "growth": "12%",
+      "retention": "98%",
+      "expansion": "3 countries"
+    }
+  },
+  {
+    "id": 5,
+    "title": "Digital Transformation Initiative",
+    "category": "innovation",
+    "location": "London Office",
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "year": 2022,
+    "description": "Complete digitization of European operations with cloud-first architecture.",
+    "impact": "30% efficiency improvement across all EU operations.",
+    "metrics": {
+      "efficiency": "30%",
+      "cost_savings": "€15M",
+      "uptime": "99.9%"
+    }
+  },
+  {
+    "id": 6,
+    "title": "Carbon Neutral Operations",
+    "category": "sustainability",
+    "location": "London Office",
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "year": 2024,
+    "description": "Achieved carbon neutrality across all European offices through renewable energy.",
+    "impact": "Zero net carbon emissions for all European operations.",
+    "metrics": {
+      "co2Reduction": "100%",
+      "renewable": "85%",
+      "offset": "1000 tons"
+    }
+  },
+  {
+    "id": 7,
+    "title": "Robotics Partnership",
+    "category": "innovation",
+    "location": "Tokyo Branch",
+    "lat": 35.6762,
+    "lng": 139.6503,
+    "year": 2023,
+    "description": "Strategic alliance with leading robotics companies for automation solutions.",
+    "impact": "Revolutionary automation solutions for manufacturing industry.",
+    "metrics": {
+      "partnerships": "8",
+      "automation": "60%",
+      "productivity": "45%"
+    }
+  },
+  {
+    "id": 8,
+    "title": "Disaster Recovery Excellence",
+    "category": "operational",
+    "location": "Tokyo Branch",
+    "lat": 35.6762,
+    "lng": 139.6503,
+    "year": 2022,
+    "description": "Best-in-class disaster recovery systems tested during natural disasters.",
+    "impact": "99.99% uptime maintained during major earthquake events.",
+    "metrics": {
+      "uptime": "99.99%",
+      "recovery_time": "< 1min",
+      "data_protection": "100%"
+    }
+  },
+  {
+    "id": 9,
+    "title": "Cultural Integration Award",
+    "category": "award",
+    "location": "Tokyo Branch",
+    "lat": 35.6762,
+    "lng": 139.6503,
+    "year": 2024,
+    "description": "Excellence in cross-cultural business practices and employee satisfaction.",
+    "impact": "Model for global cultural integration and diversity programs.",
+    "metrics": {
+      "satisfaction": "96%",
+      "diversity": "45%",
+      "retention": "94%"
+    }
+  },
+  {
+    "id": 10,
+    "title": "Smart City Initiative",
+    "category": "innovation",
+    "location": "Singapore Office",
+    "lat": 1.3521,
+    "lng": 103.8198,
+    "year": 2023,
+    "description": "Leading smart city technology implementation across Southeast Asia.",
+    "impact": "Transformed urban infrastructure for 5 million residents.",
+    "metrics": {
+      "cities": "12",
+      "population": "5M",
+      "efficiency": "35%"
+    }
+  },
+  {
+    "id": 11,
+    "title": "Fintech Innovation Hub",
+    "category": "innovation",
+    "location": "Singapore Office",
+    "lat": 1.3521,
+    "lng": 103.8198,
+    "year": 2022,
+    "description": "Established Southeast Asia's largest fintech innovation hub and accelerator.",
+    "impact": "Revolutionizing financial services across the region.",
+    "metrics": {
+      "startups": "150",
+      "funding": "$500M",
+      "jobs": "2000"
+    }
+  },
+  {
+    "id": 12,
+    "title": "Sustainability Leadership",
+    "category": "sustainability",
+    "location": "Singapore Office",
+    "lat": 1.3521,
+    "lng": 103.8198,
+    "year": 2024,
+    "description": "Zero waste to landfill achievement with comprehensive recycling program.",
+    "impact": "100% waste recycling and reuse across all operations.",
+    "metrics": {
+      "waste_reduction": "100%",
+      "recycling": "95%",
+      "savings": "$800K"
+    }
+  },
+  {
+    "id": 13,
+    "title": "Expo 2020 Technology Partner",
+    "category": "partnership",
+    "location": "Dubai Office",
+    "lat": 25.2048,
+    "lng": 55.2708,
+    "year": 2022,
+    "description": "Official technology partner for Expo 2020 Dubai showcasing innovation.",
+    "impact": "Showcased cutting-edge technology to 25 million visitors.",
+    "metrics": {
+      "visitors": "25M",
+      "demos": "500",
+      "partnerships": "50"
+    }
+  },
+  {
+    "id": 14,
+    "title": "Renewable Energy Transition",
+    "category": "sustainability",
+    "location": "Dubai Office",
+    "lat": 25.2048,
+    "lng": 55.2708,
+    "year": 2023,
+    "description": "100% renewable energy transition for all Middle East operations.",
+    "impact": "Leading clean energy adoption in MENA region.",
+    "metrics": {
+      "renewable": "100%",
+      "savings": "$2.5M",
+      "capacity": "50MW"
+    }
+  },
+  {
+    "id": 15,
+    "title": "Cross-Border Innovation",
+    "category": "innovation",
+    "location": "Dubai Office",
+    "lat": 25.2048,
+    "lng": 55.2708,
+    "year": 2024,
+    "description": "Breakthrough in cross-border payment systems using blockchain technology.",
+    "impact": "Reduced transaction costs by 70% and increased speed 10x.",
+    "metrics": {
+      "cost_reduction": "70%",
+      "speed": "10x faster",
+      "volume": "$1B"
+    }
+  },
+  {
+    "id": 16,
+    "title": "Great Barrier Reef Conservation",
+    "category": "sustainability",
+    "location": "Sydney Branch",
+    "lat": -33.8688,
+    "lng": 151.2093,
+    "year": 2023,
+    "description": "Major coral reef restoration project using innovative marine technology.",
+    "impact": "Restored 500 hectares of coral reef ecosystem.",
+    "metrics": {
+      "area_restored": "500 hectares",
+      "species": "200+",
+      "investment": "$10M"
+    }
+  },
+  {
+    "id": 17,
+    "title": "Indigenous Partnership Program",
+    "category": "social",
+    "location": "Sydney Branch",
+    "lat": -33.8688,
+    "lng": 151.2093,
+    "year": 2022,
+    "description": "Comprehensive indigenous business partnership and employment program.",
+    "impact": "Supporting indigenous communities through technology and employment.",
+    "metrics": {
+      "partnerships": "25",
+      "jobs_created": "300",
+      "investment": "$5M"
+    }
+  },
+  {
+    "id": 18,
+    "title": "Mining Technology Innovation",
+    "category": "innovation",
+    "location": "Sydney Branch",
+    "lat": -33.8688,
+    "lng": 151.2093,
+    "year": 2024,
+    "description": "Revolutionary sustainable mining solutions reducing environmental impact.",
+    "impact": "50% reduction in environmental impact of mining operations.",
+    "metrics": {
+      "efficiency": "50%",
+      "water_savings": "40%",
+      "emissions": "-60%"
+    }
+  }
+]

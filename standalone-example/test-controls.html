@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Globe Controls Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    #globe-container {
+      width: 100vw;
+      height: 100vh;
+    }
+    #controls-info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.9);
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1000;
+      max-width: 350px;
+      border: 1px solid #333;
+    }
+    .status {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    .success { background: rgba(0,255,0,0.2); border-left: 3px solid #0f0; }
+    .error { background: rgba(255,0,0,0.2); border-left: 3px solid #f00; }
+    .warning { background: rgba(255,255,0,0.2); border-left: 3px solid #ff0; }
+    .info { background: rgba(0,150,255,0.2); border-left: 3px solid #09f; }
+    
+    .test-section {
+      margin: 15px 0;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 5px;
+    }
+    
+    .test-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+      padding: 5px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+    }
+    
+    .test-status {
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 0.8em;
+    }
+    
+    .pass { background: #0a5; color: white; }
+    .fail { background: #a05; color: white; }
+    .pending { background: #555; color: white; }
+    
+    #camera-info {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 0.8em;
+    }
+    
+    .instructions {
+      background: rgba(0,100,200,0.2);
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border-left: 3px solid #06c;
+    }
+  </style>
+</head>
+<body>
+  <div id="controls-info">
+    <h3>🎮 Globe Controls Test</h3>
+    
+    <div class="instructions">
+      <strong>Test Instructions:</strong><br>
+      • Try scrolling to zoom in/out<br>
+      • Try dragging to rotate the globe<br>
+      • On mobile: pinch to zoom, drag to rotate<br>
+      • Click markers to test interaction
+    </div>
+    
+    <div class="test-section">
+      <h4>🔧 Initialization Tests</h4>
+      <div class="test-item">
+        <span>Three.js Loaded</span>
+        <span id="threejs-status" class="test-status pending">PENDING</span>
+      </div>
+      <div class="test-item">
+        <span>WebGL Support</span>
+        <span id="webgl-status" class="test-status pending">PENDING</span>
+      </div>
+      <div class="test-item">
+        <span>Controls Loaded</span>
+        <span id="controls-status" class="test-status pending">PENDING</span>
+      </div>
+      <div class="test-item">
+        <span>Globe Rendered</span>
+        <span id="globe-status" class="test-status pending">PENDING</span>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h4>🎯 Interaction Tests</h4>
+      <div class="test-item">
+        <span>Mouse Wheel Zoom</span>
+        <span id="zoom-status" class="test-status pending">TRY IT</span>
+      </div>
+      <div class="test-item">
+        <span>Mouse Drag Rotation</span>
+        <span id="rotation-status" class="test-status pending">TRY IT</span>
+      </div>
+      <div class="test-item">
+        <span>Touch Gestures</span>
+        <span id="touch-status" class="test-status pending">TRY IT</span>
+      </div>
+      <div class="test-item">
+        <span>Marker Clicking</span>
+        <span id="click-status" class="test-status pending">TRY IT</span>
+      </div>
+    </div>
+    
+    <div id="status-log" style="max-height: 150px; overflow-y: auto; margin-top: 10px;">
+      <div class="status info">Initializing tests...</div>
+    </div>
+  </div>
+  
+  <div id="camera-info">
+    <div>Camera Position: <span id="cam-pos">-</span></div>
+    <div>Camera Distance: <span id="cam-dist">-</span></div>
+    <div>Controls Type: <span id="controls-type">-</span></div>
+    <div>Auto-rotate: <span id="auto-rotate">-</span></div>
+  </div>
+  
+  <div id="globe-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.157.0/three.min.js"></script>
+  <script src="globe-simple.js"></script>
+  
+  <script>
+    // Test monitoring system
+    const statusLog = document.getElementById('status-log');
+    const tests = {
+      threejs: false,
+      webgl: false,
+      controls: false,
+      globe: false,
+      zoom: false,
+      rotation: false,
+      touch: false,
+      click: false
+    };
+    
+    let lastCameraPosition = null;
+    let lastCameraDistance = null;
+    let interactionDetected = false;
+    
+    function updateTestStatus(testName, passed, message = '') {
+      tests[testName] = passed;
+      const statusElement = document.getElementById(testName + '-status');
+      if (statusElement) {
+        statusElement.textContent = passed ? 'PASS' : 'FAIL';
+        statusElement.className = `test-status ${passed ? 'pass' : 'fail'}`;
+      }
+      
+      addLog(message || `${testName} test: ${passed ? 'PASSED' : 'FAILED'}`, passed ? 'success' : 'error');
+    }
+    
+    function addLog(message, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `status ${type}`;
+      div.textContent = message;
+      statusLog.appendChild(div);
+      statusLog.scrollTop = statusLog.scrollHeight;
+      
+      // Keep only last 20 messages
+      while (statusLog.children.length > 20) {
+        statusLog.removeChild(statusLog.firstChild);
+      }
+    }
+    
+    // Monitor console for test results
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const message = args.join(' ');
+      
+      if (message.includes('Three.js version')) {
+        updateTestStatus('threejs', true, 'Three.js loaded successfully');
+      } else if (message.includes('WebGL support confirmed')) {
+        updateTestStatus('webgl', true, 'WebGL support confirmed');
+      } else if (message.includes('Controls loaded successfully') || message.includes('Manual controls implemented')) {
+        updateTestStatus('controls', true, 'Camera controls loaded');
+        document.getElementById('controls-type').textContent = message.includes('Manual') ? 'Manual' : 'CDN';
+      } else if (message.includes('Globe setup complete')) {
+        updateTestStatus('globe', true, 'Globe rendered successfully');
+      } else if (message.includes('User interaction started')) {
+        interactionDetected = true;
+      }
+      
+      addLog(message, 'info');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      const message = args.join(' ');
+      addLog(message, 'error');
+      
+      if (message.includes('Three.js')) {
+        updateTestStatus('threejs', false, 'Three.js failed to load');
+      } else if (message.includes('WebGL')) {
+        updateTestStatus('webgl', false, 'WebGL not supported');
+      }
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      addLog(args.join(' '), 'warning');
+    };
+    
+    // Monitor camera changes for interaction detection
+    function monitorCamera() {
+      if (typeof camera !== 'undefined' && camera) {
+        const pos = camera.position;
+        const distance = Math.sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
+        
+        // Update camera info display
+        document.getElementById('cam-pos').textContent = 
+          `(${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)})`;
+        document.getElementById('cam-dist').textContent = distance.toFixed(1);
+        
+        if (typeof controls !== 'undefined' && controls) {
+          document.getElementById('auto-rotate').textContent = 
+            controls.autoRotate ? 'ON' : 'OFF';
+        }
+        
+        // Detect zoom changes
+        if (lastCameraDistance !== null) {
+          const distanceChange = Math.abs(distance - lastCameraDistance);
+          if (distanceChange > 0.1 && !tests.zoom) {
+            updateTestStatus('zoom', true, 'Zoom interaction detected');
+          }
+        }
+        
+        // Detect rotation changes
+        if (lastCameraPosition !== null) {
+          const positionChange = Math.sqrt(
+            Math.pow(pos.x - lastCameraPosition.x, 2) +
+            Math.pow(pos.y - lastCameraPosition.y, 2) +
+            Math.pow(pos.z - lastCameraPosition.z, 2)
+          );
+          if (positionChange > 0.1 && !tests.rotation) {
+            updateTestStatus('rotation', true, 'Rotation interaction detected');
+          }
+        }
+        
+        lastCameraPosition = { x: pos.x, y: pos.y, z: pos.z };
+        lastCameraDistance = distance;
+      }
+      
+      requestAnimationFrame(monitorCamera);
+    }
+    
+    // Start monitoring after a short delay
+    setTimeout(monitorCamera, 1000);
+    
+    // Monitor for marker clicks
+    document.addEventListener('click', function(event) {
+      if (event.target.tagName === 'CANVAS') {
+        setTimeout(() => {
+          const drawer = document.getElementById('achievements-drawer');
+          if (drawer && !drawer.classList.contains('hidden')) {
+            updateTestStatus('click', true, 'Marker click detected');
+          }
+        }, 100);
+      }
+    });
+    
+    // Touch event monitoring
+    let touchStarted = false;
+    document.addEventListener('touchstart', () => {
+      touchStarted = true;
+    });
+    
+    document.addEventListener('touchmove', () => {
+      if (touchStarted && !tests.touch) {
+        updateTestStatus('touch', true, 'Touch interaction detected');
+      }
+    });
+    
+    // Auto-test timeout
+    setTimeout(() => {
+      Object.keys(tests).forEach(testName => {
+        if (!tests[testName] && ['zoom', 'rotation', 'touch', 'click'].includes(testName)) {
+          const statusElement = document.getElementById(testName + '-status');
+          if (statusElement && statusElement.textContent === 'TRY IT') {
+            statusElement.textContent = 'NOT TESTED';
+            statusElement.className = 'test-status pending';
+          }
+        }
+      });
+    }, 30000); // 30 second timeout
+  </script>
+</body>
+</html>
