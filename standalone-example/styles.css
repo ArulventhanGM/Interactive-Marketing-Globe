@@ -1892,46 +1892,7 @@ body {
   text-shadow: 0 0 8px rgba(0, 255, 127, 0.3);
 }
 
-/* Greenwich Mean Time Info Box Styles */
-.greenwich-time-info {
-  min-height: 120px;
-  border-color: rgba(255, 215, 0, 0.6);
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 165, 0, 0.02));
-}
 
-.greenwich-time-info .info-icon {
-  font-size: 1.3rem;
-  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
-  flex-shrink: 0;
-}
-
-.info-details {
-  margin-top: 10px;
-}
-
-.detail-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
-.detail-item:last-child {
-  margin-bottom: 0;
-}
-
-.detail-label {
-  font-size: 0.8rem;
-  color: #ccc;
-  font-weight: 600;
-}
-
-.detail-value {
-  font-size: 0.8rem;
-  color: #FFD700;
-  font-weight: 600;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-}
 
 /* Main Content Adjustment for Left Sidebar */
 .main-content {
