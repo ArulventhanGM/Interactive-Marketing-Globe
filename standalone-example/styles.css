@@ -45,20 +45,21 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   padding: 15px 20px;
+  z-index: 100;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 999;
-  flex-wrap: wrap;
-  gap: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
 .filter-group {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-right: 20px;
+  margin-bottom: 10px;
 }
 
 .filter-group label {
@@ -85,6 +86,43 @@ body {
 .filter-group select option {
   background: #333;
   color: white;
+}
+
+/* Special styling for location dropdown */
+#location-select {
+  position: relative;
+  background-color: rgba(0, 60, 90, 0.7);
+  border: 1px solid #00BFFF;
+  color: #00BFFF;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+#location-select:hover {
+  background-color: rgba(0, 80, 120, 0.9);
+  border-color: #00FFFF;
+  box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+}
+
+#location-select:focus {
+  outline: none;
+  box-shadow: 0 0 12px rgba(0, 191, 255, 0.7);
+}
+
+#location-select option {
+  background-color: #0A1929;
+  color: #ffffff;
+  padding: 8px;
+}
+
+/* Add icon to location dropdown */
+.filter-group label:has(+ #location-select)::before {
+  content: "📍";
+  margin-right: 5px;
 }
 
 .stats-summary {
@@ -1562,95 +1600,468 @@ body {
   border-left: 4px solid #FF1493;
 }
 
-/* Bottom Status Panel - Override existing styles */
-.bottom-status-panel {
+/* Left Sidebar Layout - Optimized */
+.left-sidebar {
   position: fixed;
+  left: 20px;
+  top: 140px; /* Below header and filters */
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 300px; /* Slightly wider for better content */
   display: flex;
-  gap: 20px;
-  z-index: 1000;
-  align-items: center;
+  flex-direction: column;
+  gap: 12px; /* Consistent spacing between panels */
+  z-index: 1500;
+  pointer-events: none;
+  padding: 0; /* Remove any default padding */
 }
 
-/* Updated Day/Night Indicator for bottom panel */
-.bottom-status-panel .day-night-indicator {
-  position: static;
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 12px 15px;
-  color: white;
-  font-family: 'Courier New', monospace;
-  backdrop-filter: blur(10px);
+.left-sidebar > * {
+  pointer-events: auto;
+}
+
+/* Sidebar Panel Base Styles - Enhanced */
+.sidebar-panel {
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  flex-shrink: 0; /* Prevent panels from shrinking */
+  min-height: fit-content; /* Ensure proper height calculation */
+}
+
+.sidebar-panel:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+.panel-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 200px;
+  padding: 14px 16px; /* Slightly more padding for better visual hierarchy */
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 48px; /* Consistent header height */
 }
 
-.bottom-status-panel .day-night-indicator .indicator-icon {
-  font-size: 20px;
+.panel-title {
+  font-size: 0.95rem; /* Slightly larger for better readability */
+  color: #FFD700;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  flex: 1; /* Take remaining space */
 }
 
-.bottom-status-panel .day-night-indicator .indicator-text {
+.panel-content {
+  padding: 14px 16px; /* Consistent with header padding */
+}
+
+/* Day/Night Indicator Sidebar Styles - Enhanced */
+.day-night-indicator {
+  min-height: 85px; /* Consistent panel height */
+}
+
+.day-night-indicator.day {
+  border-color: rgba(255, 215, 0, 0.6);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 165, 0, 0.02));
+}
+
+.day-night-indicator.night {
+  border-color: rgba(100, 149, 237, 0.6);
+  background: linear-gradient(135deg, rgba(100, 149, 237, 0.05), rgba(75, 0, 130, 0.02));
+}
+
+.day-night-indicator.transition {
+  border-color: rgba(255, 140, 0, 0.6);
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.05), rgba(255, 69, 0, 0.02));
+}
+
+.indicator-icon {
+  font-size: 1.4rem; /* Slightly larger for better visibility */
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.indicator-status {
+  font-size: 0.9rem; /* Slightly larger for better readability */
+  color: #e8e8e8; /* Brighter text for better contrast */
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Lighting Controls Sidebar Styles - Enhanced */
+.lighting-controls {
+  min-height: 140px; /* Consistent panel height for controls */
+}
+
+.controls-icon {
+  font-size: 1.3rem; /* Larger for better visibility */
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+  flex-shrink: 0;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Slightly more spacing */
+  font-size: 0.9rem; /* Larger for better readability */
+  margin-bottom: 14px; /* More spacing between groups */
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+.control-group label {
+  color: #e0e0e0; /* Brighter text */
+  font-size: 0.85rem; /* Slightly larger */
+  font-weight: 600; /* Bolder for better hierarchy */
+}
+
+.slider-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
   flex: 1;
 }
 
-.bottom-status-panel .day-night-indicator .indicator-label {
-  font-size: 10px;
-  color: #00BFFF;
-  font-weight: bold;
-  margin-bottom: 2px;
-  display: block;
+.control-select:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
-.bottom-status-panel .day-night-indicator .indicator-status {
-  font-size: 12px;
-  color: #fff;
-}
-
-.bottom-status-panel .day-night-indicator.day {
-  border-color: rgba(255, 215, 0, 0.5);
-  background: rgba(255, 215, 0, 0.1);
-}
-
-.bottom-status-panel .day-night-indicator.night {
-  border-color: rgba(138, 43, 226, 0.5);
-  background: rgba(138, 43, 226, 0.1);
-}
-
-/* Updated GMT Clock for bottom panel */
-.bottom-status-panel .gmt-clock {
-  position: static;
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(0, 191, 255, 0.3);
-  border-radius: 10px;
-  padding: 12px 15px;
+.control-select option {
+  background: #333;
   color: white;
-  font-family: 'Courier New', monospace;
-  text-align: center;
-  backdrop-filter: blur(10px);
-  min-width: 180px;
 }
 
-.bottom-status-panel .gmt-clock .clock-label {
-  font-size: 10px;
+.control-slider {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.control-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #00BFFF;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+}
+
+.control-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #00BFFF;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+}
+
+.control-value {
   color: #00BFFF;
-  margin-bottom: 2px;
-  font-weight: bold;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
 }
 
-.bottom-status-panel .gmt-clock .clock-time {
-  font-size: 16px;
-  font-weight: bold;
-  color: #00FF00;
-  margin-bottom: 2px;
-  letter-spacing: 1px;
-}
-
-.bottom-status-panel .gmt-clock .clock-date {
-  font-size: 10px;
+.control-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
   color: #ccc;
 }
+
+.control-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 16px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.control-checkbox input[type="checkbox"]:checked + .checkmark {
+  background: #00BFFF;
+  border-color: #00BFFF;
+}
+
+.control-checkbox input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* GMT Clock Sidebar Styles - Enhanced */
+.gmt-clock {
+  min-height: 90px; /* Consistent panel height */
+}
+
+.clock-icon {
+  font-size: 1.3rem; /* Larger for better visibility */
+  filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.4));
+  flex-shrink: 0;
+}
+
+.clock-time {
+  font-size: 1.2rem; /* Slightly larger for better readability */
+  color: #00FF7F; /* Brighter green for better visibility */
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 12px rgba(0, 255, 127, 0.4);
+  margin-bottom: 6px; /* More spacing */
+  text-align: center;
+  letter-spacing: 1px; /* Better character spacing */
+}
+
+.clock-date {
+  font-size: 0.8rem; /* Slightly larger */
+  color: #e0e0e0; /* Brighter text */
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Real-Time GMT Lighting Info Box Styles */
+.gmt-lighting-info {
+  min-height: 100px;
+  border-color: rgba(0, 191, 255, 0.6);
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.05), rgba(0, 150, 255, 0.02));
+}
+
+.gmt-lighting-info .info-icon {
+  font-size: 1.3rem;
+  filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.4));
+  flex-shrink: 0;
+}
+
+.info-description {
+  font-size: 0.85rem;
+  color: #e0e0e0;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.info-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-label {
+  font-size: 0.8rem;
+  color: #ccc;
+  font-weight: 600;
+}
+
+.status-value {
+  font-size: 0.8rem;
+  color: #00FF7F;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(0, 255, 127, 0.3);
+}
+
+/* Greenwich Mean Time Info Box Styles */
+.greenwich-time-info {
+  min-height: 120px;
+  border-color: rgba(255, 215, 0, 0.6);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 165, 0, 0.02));
+}
+
+.greenwich-time-info .info-icon {
+  font-size: 1.3rem;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+  flex-shrink: 0;
+}
+
+.info-details {
+  margin-top: 10px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  color: #ccc;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 0.8rem;
+  color: #FFD700;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+/* Main Content Adjustment for Left Sidebar */
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 140px; /* Adjusted for filters */
+  margin-left: 340px; /* Account for wider left sidebar (300px + 40px padding) */
+  padding: 20px;
+}
+
+.globe-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: calc(100vh - 160px); /* Full height minus header/filters */
+  max-width: calc(100vw - 360px); /* Account for wider sidebar with padding */
+}
+
+/* Responsive Design for Left Sidebar */
+@media (max-width: 768px) {
+  .left-sidebar {
+    position: relative;
+    width: 100%;
+    top: auto;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    margin: 15px;
+    margin-top: 0;
+    gap: 10px;
+  }
+
+  .main-content {
+    margin-left: 0;
+    margin-top: 160px;
+  }
+
+  .globe-container {
+    max-width: calc(100vw - 40px);
+  }
+
+  .sidebar-panel {
+    margin-bottom: 10px;
+  }
+
+  .panel-header {
+    padding: 10px 12px;
+  }
+
+  .panel-content {
+    padding: 10px 12px;
+  }
+
+  .control-group {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-sidebar {
+    margin: 10px;
+    gap: 8px;
+  }
+
+  .main-content {
+    margin-top: 180px;
+  }
+
+  .panel-header {
+    padding: 8px 10px;
+  }
+
+  .panel-title {
+    font-size: 0.8rem;
+  }
+
+  .panel-content {
+    padding: 8px 10px;
+  }
+
+  .indicator-icon,
+  .controls-icon,
+  .clock-icon,
+  .info-icon {
+    font-size: 1rem;
+  }
+
+  .indicator-status {
+    font-size: 0.7rem;
+  }
+
+  .control-group label {
+    font-size: 0.75rem;
+  }
+
+  .control-select {
+    font-size: 0.75rem;
+    padding: 3px 6px;
+  }
+
+  .control-value {
+    font-size: 0.7rem;
+  }
+
+  .control-checkbox {
+    font-size: 0.75rem;
+  }
+
+  .clock-time {
+    font-size: 1rem;
+  }
+
+  .clock-date {
+    font-size: 0.7rem;
+  }
+
+  .info-description {
+    font-size: 0.75rem;
+  }
+
+  .status-label,
+  .status-value,
+  .detail-label,
+  .detail-value {
+    font-size: 0.7rem;
+  }
+}
+
+/* Left Sidebar Implementation Complete */

@@ -57,11 +57,85 @@
           <option value="2022">2022</option>
         </select>
       </div>
+      <div class="filter-group">
+        <label>Go To Location:</label>
+        <select id="location-select">
+          <option value="">Select Location</option>
+          <option value="nyc">New York HQ</option>
+          <option value="london">London Office</option>
+          <option value="tokyo">Tokyo Branch</option>
+          <option value="sydney">Sydney Branch</option>
+        </select>
+      </div>
       <div class="stats-summary">
         <span id="total-achievements">Total Achievements: 18</span>
         <span id="total-locations">Locations: 6</span>
       </div>
     </div>
+
+    <!-- Left Sidebar for Controls -->
+    <aside class="left-sidebar">
+
+
+      <!-- Enhanced Lighting Controls -->
+      <div id="lighting-controls" class="lighting-controls sidebar-panel">
+        <div class="panel-header">
+          <span class="controls-icon">💡</span>
+          <span class="panel-title">Lighting Controls</span>
+        </div>
+        <div class="panel-content">
+          <div class="control-group">
+            <label for="lighting-mode">Mode:</label>
+            <select id="lighting-mode" class="control-select">
+              <option value="auto">Auto (GMT)</option>
+              <option value="day">Always Day</option>
+              <option value="night">Always Night</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="lighting-intensity">Intensity:</label>
+            <div class="slider-group">
+              <input type="range" id="lighting-intensity" class="control-slider"
+                     min="0.1" max="2.0" step="0.1" value="1.0">
+              <span id="intensity-value" class="control-value">100%</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-checkbox">
+              <input type="checkbox" id="atmospheric-effects" checked>
+              <span class="checkmark"></span>
+              Atmospheric Effects
+            </label>
+          </div>
+        </div>
+      </div>
+
+
+
+
+      <!-- Greenwich Mean Time Info Box -->
+      <div id="greenwichTimeBox" class="greenwich-time-info sidebar-panel">
+        <div class="panel-header">
+          <span class="info-icon">🕰️</span>
+          <span class="panel-title">Greenwich Mean Time</span>
+        </div>
+        <div class="panel-content">
+          <div class="info-description">
+            Coordinated Universal Time (UTC) reference for global operations
+          </div>
+          <div class="info-details">
+            <div class="detail-item">
+              <span class="detail-label">Timezone:</span>
+              <span class="detail-value">UTC+0</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Location:</span>
+              <span class="detail-value">Greenwich, UK</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
 
     <main class="main-content">
       <div class="globe-wrapper">
@@ -194,24 +268,7 @@
           </div>
         </div>
 
-        <!-- Bottom Status Panel -->
-        <div class="bottom-status-panel">
-          <!-- Day/Night Indicator -->
-          <div id="day-night-indicator" class="day-night-indicator">
-            <div class="indicator-icon">🌅</div>
-            <div class="indicator-text">
-              <div class="indicator-label">Real-Time GMT Lighting</div>
-              <div id="lighting-status" class="indicator-status">Initializing...</div>
-            </div>
-          </div>
 
-          <!-- GMT Clock Display -->
-          <div id="gmt-clock" class="gmt-clock">
-            <div class="clock-label">Greenwich Mean Time</div>
-            <div id="gmt-time" class="clock-time">--:--:-- GMT</div>
-            <div id="gmt-date" class="clock-date">Loading...</div>
-          </div>
-        </div>
       </div>
     </main>
 
@@ -229,6 +286,7 @@
   </div>
 
   <script src="globe-simple.js"></script>
+  <script src="locations-navigation.js"></script>
   <script>
     // Show/hide menu
     document.querySelector('.hamburger').addEventListener('click', function() {

@@ -596,6 +596,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Start the day/night update cycle
     startDayNightCycle();
 
+    // Setup lighting controls after a short delay to ensure DOM is ready
+    setTimeout(() => {
+      setupLightingControls();
+    }, 500);
+
     console.log('     ✅ Day/night lighting system ready');
   }
 
@@ -662,29 +667,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     const isDay = sunPos.x > 0;
     const sunHeight = Math.max(0, sunPos.x / 50); // Normalize to 0-1
 
-    // CONSISTENT DAYLIGHT MODE: Always provide bright daylight lighting
-    // Override the day/night cycle to maintain consistent bright appearance
-
-    // Set consistent bright daylight parameters
-    sunLight.intensity = 1.2; // Full bright daylight intensity
-    sunLight.color.setHex(0xffffff); // Pure white daylight
-
-    // Ensure bright ambient lighting for clear visibility
-    ambientLight.intensity = 0.5; // Bright ambient light
-    ambientLight.color.setHex(0xffffff); // White ambient light
-    ambientLight.visible = true;
-
-    // Disable night lighting completely
-    nightAmbientLight.visible = false;
+    // Note: Lighting intensity is now handled by the setupLightingControls function
+    // This function only updates sun position and determines day/night status
+    // The actual lighting values are applied by applyLightingIntensity()
 
     // Update day/night indicator
     updateDayNightIndicator(isDay, sunHeight, sunPos);
 
-    // Enhanced logging with GMT time details (display-only, not affecting lighting)
+    // Enhanced logging with GMT time details
     const gmtTimeStr = `${String(sunPos.gmtHours).padStart(2, '0')}:${String(sunPos.gmtMinutes).padStart(2, '0')} GMT`;
     const lightType = isDay ? 'Day' : 'Night';
     const seasonInfo = `Day ${sunPos.dayOfYear}/365`;
-    console.log(`☀️ Consistent daylight mode - GMT: ${gmtTimeStr} (${seasonInfo}, Display: ${lightType})`);
+    console.log(`☀️ Sun position updated - GMT: ${gmtTimeStr} (${seasonInfo}, ${lightType})`);
 
     return { isDay, sunHeight, position: sunPos, gmtTime: sunPos.gmtTime };
   }
@@ -718,36 +712,60 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     if (!indicator || !status) return;
 
+    // Get current lighting mode
+    const lightingModeSelect = document.getElementById('lighting-mode');
+    const currentMode = lightingModeSelect ? lightingModeSelect.value : 'auto';
+
     // Remove existing classes
-    indicator.classList.remove('day', 'night');
+    indicator.classList.remove('day', 'night', 'transition');
 
-    if (isDay) {
-      indicator.classList.add('day');
+    // Handle different lighting modes
+    switch (currentMode) {
+      case 'day':
+        indicator.classList.add('day');
+        icon.textContent = '☀️';
+        status.textContent = 'Always Day Mode';
+        break;
 
-      // Update icon based on sun height (GMT-based)
-      if (sunHeight > 0.7) {
-        icon.textContent = '☀️'; // High sun
-        status.textContent = 'Bright Daylight';
-      } else if (sunHeight > 0.4) {
-        icon.textContent = '🌤️'; // Medium sun
-        status.textContent = 'Daylight';
-      } else {
-        icon.textContent = '🌅'; // Low sun (GMT sunrise/sunset)
-        status.textContent = 'Golden Hour';
-      }
-    } else {
-      indicator.classList.add('night');
-      icon.textContent = '🌙';
-      status.textContent = 'Nighttime';
+      case 'night':
+        indicator.classList.add('night');
+        icon.textContent = '🌙';
+        status.textContent = 'Always Night Mode';
+        break;
+
+      case 'auto':
+      default:
+        // Auto mode: Show actual day/night based on GMT
+        if (isDay) {
+          indicator.classList.add('day');
+          // Update icon based on sun height (GMT-based)
+          if (sunHeight > 0.7) {
+            icon.textContent = '☀️'; // High sun
+            status.textContent = 'Bright Daylight';
+          } else if (sunHeight > 0.4) {
+            icon.textContent = '🌤️'; // Medium sun
+            status.textContent = 'Daylight';
+          } else {
+            icon.textContent = '🌅'; // Low sun (GMT sunrise/sunset)
+            status.textContent = 'Golden Hour';
+          }
+        } else {
+          indicator.classList.add('night');
+          icon.textContent = '🌙';
+          status.textContent = 'Nighttime';
+        }
+        break;
     }
 
     // Add current GMT time (more precise than UTC string parsing)
     const gmtTimeStr = `${String(sunPos.gmtHours).padStart(2, '0')}:${String(sunPos.gmtMinutes).padStart(2, '0')}`;
     status.textContent += ` (GMT ${gmtTimeStr})`;
 
-    // Add seasonal information
-    const season = getSeason(sunPos.dayOfYear);
-    status.textContent += ` • ${season}`;
+    // Add seasonal information for auto mode
+    if (currentMode === 'auto') {
+      const season = getSeason(sunPos.dayOfYear);
+      status.textContent += ` • ${season}`;
+    }
   }
 
   // Helper function to determine season based on day of year
@@ -795,9 +813,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   function createMarkers() {
-    try {
-      const locations = [
+    try {      const locations = [
         {
+          id: "nyc",
           name: "New York HQ",
           lat: 40.7128,
           lng: -74.0060,
@@ -833,8 +851,8 @@ document.addEventListener('DOMContentLoaded', async function() {
               metrics: { patents: "25", researchers: "150", funding: "$50M" }
             }
           ]
-        },
-        {
+        },        {
+          id: "london",
           name: "London Office",
           lat: 51.5074,
           lng: -0.1278,
@@ -862,8 +880,8 @@ document.addEventListener('DOMContentLoaded', async function() {
               metrics: { efficiency: "50%", security: "99.9%", cost: "-30%" }
             }
           ]
-        },
-        {
+        },        {
+          id: "tokyo",
           name: "Tokyo Branch",
           lat: 35.6762,
           lng: 139.6503,
@@ -891,8 +909,8 @@ document.addEventListener('DOMContentLoaded', async function() {
               metrics: { satisfaction: "96%", retention: "94%", diversity: "85%" }
             }
           ]
-        },
-        {
+        },        {
+          id: "sydney",
           name: "Sydney Branch",
           lat: -33.8688,
           lng: 151.2093,
@@ -2147,6 +2165,166 @@ document.addEventListener('DOMContentLoaded', async function() {
       currentLocation = null;
       console.log('📋 Achievement modal closed');
     }
+  }
+
+  // Setup lighting controls functionality
+  function setupLightingControls() {
+    console.log('💡 Setting up lighting controls...');
+
+    // Global lighting intensity variable
+    let lightingIntensity = 1.0;
+
+    // Get control elements
+    const lightingModeSelect = document.getElementById('lighting-mode');
+    const lightingIntensitySlider = document.getElementById('lighting-intensity');
+    const intensityValueDisplay = document.getElementById('intensity-value');
+    const atmosphericEffectsCheckbox = document.getElementById('atmospheric-effects');
+
+    if (!lightingModeSelect || !lightingIntensitySlider || !intensityValueDisplay) {
+      console.warn('⚠️ Lighting control elements not found');
+      return;
+    }
+
+    // Update intensity display function
+    function updateIntensityDisplay(value) {
+      const percentage = Math.round(value * 100);
+      intensityValueDisplay.textContent = `${percentage}%`;
+    }
+
+    // Apply lighting intensity to the scene
+    function applyLightingIntensity(intensity) {
+      if (!sunLight || !ambientLight) {
+        console.warn('⚠️ Lighting objects not available yet');
+        return;
+      }
+
+      // Store the base intensity
+      lightingIntensity = intensity;
+
+      // Get current lighting mode
+      const currentMode = lightingModeSelect.value;
+
+      // Get current day/night status for auto mode
+      const now = new Date();
+      const sunPos = calculateSunPosition();
+      const isDay = sunPos.x > 0;
+      const sunHeight = Math.max(0, sunPos.x / 50);
+
+      // Apply intensity based on current mode with enhanced ranges for visibility
+      switch (currentMode) {
+        case 'day':
+          // Day mode: Enhanced intensity range for dramatic effect
+          sunLight.intensity = Math.max(0.1, 2.5 * intensity); // Range: 0.25 to 5.0
+          sunLight.color.setHex(0xffffff);
+          ambientLight.intensity = Math.max(0.05, 0.8 * intensity); // Range: 0.08 to 1.6
+          ambientLight.color.setHex(0xffffff);
+          ambientLight.visible = true;
+          if (nightAmbientLight) nightAmbientLight.visible = false;
+          break;
+
+        case 'night':
+          // Night mode: Enhanced intensity range for dramatic effect
+          sunLight.intensity = Math.max(0.01, 0.2 * intensity); // Range: 0.02 to 0.4
+          sunLight.color.setHex(0x4444aa);
+          ambientLight.intensity = Math.max(0.02, 0.15 * intensity); // Range: 0.015 to 0.3
+          ambientLight.color.setHex(0x404040);
+          if (nightAmbientLight) {
+            nightAmbientLight.intensity = Math.max(0.05, 0.4 * intensity); // Range: 0.04 to 0.8
+            nightAmbientLight.visible = true;
+          }
+          ambientLight.visible = true;
+          break;
+
+        case 'auto':
+        default:
+          // Auto mode: Dynamic lighting based on GMT time with enhanced intensity multiplier
+          if (isDay) {
+            // Daylight with enhanced user intensity
+            const baseSunIntensity = 1.5 + sunHeight * 0.5; // Base range: 1.5 to 2.0
+            const baseAmbientIntensity = 0.6 + sunHeight * 0.2; // Base range: 0.6 to 0.8
+
+            sunLight.intensity = Math.max(0.1, baseSunIntensity * intensity); // Range: 0.15 to 4.0
+            sunLight.color.setHex(0xffffff);
+            ambientLight.intensity = Math.max(0.05, baseAmbientIntensity * intensity); // Range: 0.06 to 1.6
+            ambientLight.color.setHex(0xffffff);
+            ambientLight.visible = true;
+            if (nightAmbientLight) nightAmbientLight.visible = false;
+          } else {
+            // Nighttime with enhanced user intensity
+            sunLight.intensity = Math.max(0.01, 0.1 * intensity); // Range: 0.01 to 0.2
+            sunLight.color.setHex(0x4444aa);
+            ambientLight.intensity = Math.max(0.02, 0.12 * intensity); // Range: 0.012 to 0.24
+            ambientLight.color.setHex(0x404040);
+            if (nightAmbientLight) {
+              nightAmbientLight.intensity = Math.max(0.05, 0.35 * intensity); // Range: 0.035 to 0.7
+              nightAmbientLight.visible = true;
+            }
+            ambientLight.visible = true;
+          }
+          break;
+      }
+
+      console.log(`💡 Applied lighting intensity: ${intensity} (${Math.round(intensity * 100)}%) - Mode: ${currentMode}`);
+    }
+
+    // Lighting intensity slider event listener
+    lightingIntensitySlider.addEventListener('input', function(event) {
+      const intensity = parseFloat(event.target.value);
+      updateIntensityDisplay(intensity);
+      applyLightingIntensity(intensity);
+    });
+
+    // Lighting mode change event listener
+    lightingModeSelect.addEventListener('change', function(event) {
+      const mode = event.target.value;
+      console.log(`🌅 Lighting mode changed to: ${mode}`);
+
+      // Reapply current intensity with new mode
+      applyLightingIntensity(lightingIntensity);
+
+      // Update day/night indicator
+      const indicator = document.getElementById('day-night-indicator');
+      const status = document.getElementById('lighting-status');
+
+      if (indicator && status) {
+        // Remove existing mode classes
+        indicator.classList.remove('day', 'night', 'transition');
+
+        switch (mode) {
+          case 'day':
+            indicator.classList.add('day');
+            status.textContent = 'Always Day Mode';
+            break;
+          case 'night':
+            indicator.classList.add('night');
+            status.textContent = 'Always Night Mode';
+            break;
+          case 'auto':
+            indicator.classList.add('transition');
+            status.textContent = 'Auto GMT Mode';
+            break;
+        }
+      }
+    });
+
+    // Atmospheric effects toggle
+    if (atmosphericEffectsCheckbox) {
+      atmosphericEffectsCheckbox.addEventListener('change', function(event) {
+        const enabled = event.target.checked;
+        console.log(`🌫️ Atmospheric effects: ${enabled ? 'enabled' : 'disabled'}`);
+
+        // Toggle atmosphere visibility if it exists
+        if (typeof atmosphere !== 'undefined' && atmosphere) {
+          atmosphere.visible = enabled;
+        }
+      });
+    }
+
+    // Initialize with default values
+    updateIntensityDisplay(lightingIntensity);
+    applyLightingIntensity(lightingIntensity);
+
+    console.log('✅ Lighting controls setup complete');
   }
 
   console.log('🌍 Globe setup complete');
